@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI News Summarizer</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 40px;
+        background-color: #f4f4f4;
+      }
+
+      h1 {
+        text-align: center;
+        color: #333;
+      }
+
+      form {
+        max-width: 500px;
+        margin: 0 auto;
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+      }
+
+      input[type="text"] {
+        width: 100%;
+        padding: 10px;
+        margin-top: 10px;
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+
+      button {
+        background-color: #007bff;
+        color: white;
+        padding: 12px;
+        border: none;
+        border-radius: 4px;
+        width: 100%;
+        font-size: 16px;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background-color: #0056b3;
+      }
+
+      .result {
+        max-width: 700px;
+        margin: 20px auto;
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .result h2 {
+        color: #333;
+      }
+
+      .result p {
+        line-height: 1.6;
+        color: #555;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>AI News Summarizer</h1>
+
+    <form id="news-form">
+      <input
+        type="text"
+        id="query"
+        placeholder="Enter your topic..."
+        required
+      />
+      <button type="submit">Summarize News</button>
+    </form>
+
+    <div id="results" class="result">
+      <!-- News summaries will appear here -->
+    </div>
+
+    <script>
+      document
+        .getElementById("news-form")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          const query = document.getElementById("query").value.trim();
+          if (query === "") {
+            alert("Please enter a topic to search.");
+            return;
+          }
+
+          fetch(`/news?query=${query}`)
+            .then((response) => response.json())
+            .then((data) => {
+              const resultsDiv = document.getElementById("results");
+              resultsDiv.innerHTML = "";
+
+              if (data.length === 0) {
+                resultsDiv.innerHTML =
+                  "<p>No news articles found for this topic.</p>";
+              } else {
+                data.forEach((news) => {
+                  resultsDiv.innerHTML += `
+                                <div style="margin-bottom: 20px;">
+                                    <h2>${news.title}</h2>
+                                    <p>${news.summary}</p>
+                                    <a href="${news.url}" target="_blank">Read full article</a>
+                                </div>
+                            `;
+                });
+              }
+            })
+            .catch((error) => {
+              console.error("Error fetching the news:", error);
+              document.getElementById("results").innerHTML =
+                "<p>An error occurred. Please try again.</p>";
+            });
+        });
+    </script>
+  </body>
+</html>
